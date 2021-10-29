@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tanken</string>
+    <string name="activity_select_location_title">Standort auswählen</string>
+    <string name="activity_select_location_locations_title">Orte in der Nähe</string>
+    <string name="activity_select_location_select_this_place">Diesen Standort verwenden</string>
+</resources>

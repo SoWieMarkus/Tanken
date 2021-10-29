@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Tanken</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="activity_select_location_title">Select location</string>
+    <string name="activity_select_location_locations_title">Places nearby</string>
+    <string name="activity_select_location_select_this_place">Use this location</string>
+</resources>
