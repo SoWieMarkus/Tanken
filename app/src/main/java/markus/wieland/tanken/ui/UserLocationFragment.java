@@ -64,7 +64,7 @@ public class UserLocationFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_location, container, false);
         RecyclerView stationList = (RecyclerView)view.findViewById(R.id.fragment_user_location_stations);
-        stationList.setHasFixedSize(true);
+        stationList.setHasFixedSize(false);
         stationList.setLayoutManager(new LinearLayoutManager(getContext()));
         stationList.setAdapter(fuelStationAdapter);
         return view;

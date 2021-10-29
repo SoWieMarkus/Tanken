@@ -1,22 +1,22 @@
 package markus.wieland.tanken;
 
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import markus.wieland.defaultappelements.uielements.activities.DefaultActivity;
-import markus.wieland.defaultappelements.uielements.viewpager.ViewPageAdapter;
-import markus.wieland.defaultappelements.uielements.viewpager.ViewPageAdapterItem;
-import markus.wieland.tanken.ui.FavoritesFragment;
+import markus.wieland.tanken.api.TankenApi;
+import markus.wieland.tanken.api.models.location.Location;
 import markus.wieland.tanken.ui.search.LocationAdapter;
 
-public class SearchActivity extends DefaultActivity {
+public class SearchActivity extends DefaultActivity implements SearchView.OnQueryTextListener {
 
     private RecyclerView locationList;
     private LocationAdapter locationAdapter;
-    private ViewPager viewPager;
+    private SearchView searchView;
+    private TankenApi tankenApi;
 
     public SearchActivity() {
         super(R.layout.activity_search);
@@ -24,22 +24,47 @@ public class SearchActivity extends DefaultActivity {
 
     @Override
     public void bindViews() {
-        viewPager = findViewById(R.id.viewPager);
+        searchView = findViewById(R.id.activity_search_location_search_view);
+        locationList = findViewById(R.id.activity_search_location_list);
 
-        List<ViewPageAdapterItem> items = new ArrayList<>();
-        items.add(new ViewPageAdapterItem("LOL", FavoritesFragment.newInstance("Hallo1")));
-        items.add(new ViewPageAdapterItem("LOL", FavoritesFragment.newInstance("Hallo2")));
-        ViewPageAdapter viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager(), items);
-        viewPager.setAdapter(viewPageAdapter);
     }
 
     @Override
     public void initializeViews() {
-
+        locationList.setLayoutManager(new LinearLayoutManager(this));
+        locationList.setHasFixedSize(true);
+        searchView.setOnQueryTextListener(this);
     }
 
     @Override
     public void execute() {
+        tankenApi = new TankenApi(this);
         locationAdapter = new LocationAdapter(null);
+        locationList.setAdapter(locationAdapter);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        startQuery(query);
+        return false;
+    }
+
+    private void onLoad(Location[] locations) {
+        locationAdapter.submitList(locations);
+    }
+
+    private void startQuery(String query) {
+        if (query.length() > 2) {
+            if (query.matches("[0-9]+"))
+                tankenApi.queryLocationByPostCode(this::onLoad, query);
+            else
+                tankenApi.queryLocationByCity(this::onLoad, query);
+        }
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        startQuery(newText);
+        return false;
     }
 }

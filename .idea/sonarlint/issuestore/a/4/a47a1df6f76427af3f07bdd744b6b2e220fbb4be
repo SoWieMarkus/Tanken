@@ -1,7 +1,46 @@
 
+d
+java:S1128$"HRemove this unused import 'markus.wieland.tanken.ui.FuelStationAdapter'.(í÷¿8Î›æâÌ/
+M
+java:S1948>"+Make "viewPager" transient or serializable.(åÙ¬Ïûÿÿÿÿ8Ù²ıäÌ/
+P
+java:S2055+".Add a no-arg constructor to "DefaultActivity".(Ùóò’úÿÿÿÿ8Ù²ıäÌ/
+„
+java:S1128"bRemove this unused import 'com.google.android.material.floatingactionbutton.FloatingActionButton'.(ôˆêãÿÿÿÿÿ8šü„åÌ/
+K
+java:S1068;".Remove this unused "coordinate" private field.(ü¬­8£ÀîâÌ/
+H
+java:S19489"+Make "tankenApi" transient or serializable.(Æó°Á8Ù²ıäÌ/
+N
+java:S1948<"1Make "addUserLocation" transient or serializable.(à¶×À8Ù²ıäÌ/
+o
+java:S1128"MRemove this unused import 'androidx.recyclerview.widget.LinearLayoutManager'.(ôœ¹ºıÿÿÿÿ8ıÆåâÌ/
+]	java:S125l"<This block of commented-out lines of code should be removed.(ŒÆÇ¼şÿÿÿÿ8±à‰ãÌ/
+N
+java:S1948:"2Make "stationViewModel" transient or serializable.(éğM8Ù²ıäÌ/
+¤
+java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(¤È–Ùıÿÿÿÿ8ÕïâÌ/
+K
+java:S19488")Make "mapView" transient or serializable.(·Àºúÿÿÿÿ8Ù²ıäÌ/
+S
+java:S1948?"1Make "viewPageAdapter" transient or serializable.(ÿ¡ºüÿÿÿÿ8Ù²ıäÌ/
+P
+java:S1128".Remove this unused import 'android.view.View'.(Ø½­äşÿÿÿÿ8±åäÌ/
+¤
+java:S1186ª"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÃÎ×«ûÿÿÿÿ8ŞıúäÌ/
+X	java:S125^"<This block of commented-out lines of code should be removed.(¬óÕ”8ç“–åÌ/
+q
+java:S1128"ORemove this unused import 'markus.wieland.tanken.api.models.stations.FuelType'.(ªäÖ×şÿÿÿÿ8éôæâÌ/
+^	java:S125®"<This block of commented-out lines of code should be removed.(ÜÊ¡Üûÿÿÿÿ8£ÀîâÌ/
+Z
+java:S1128"8Remove this unused import 'androidx.lifecycle.Observer'.(ÒÁˆÉşÿÿÿÿ8Û°ïâÌ/
 O
-java:S1135"2Complete the task associated to this TODO comment.(—„Áü8•àÿµË/
-£
-java:S1186c"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ù½‹şüÿÿÿÿ8©ë¼ßË/
-£
-java:S1186^"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ø ±Ëûÿÿÿÿ8»Ş¯ºË/
+java:S1135-"2Complete the task associated to this TODO comment.(—„Áü8”ç•ÙÌ/
+U
+java:S1135›"2Complete the task associated to this TODO comment.(¬ˆöêøÿÿÿÿ8“‚ŠäÌ/
+T
+java:S1128	"2Remove this unused import 'android.widget.Button'.(²òıÿÿÿÿ8†«åâÌ/
+P
+java:S1068:"4Remove this unused "stationViewModel" private field.(éğM8£ÀîâÌ/
+h
+java:S1128"FRemove this unused import 'androidx.recyclerview.widget.RecyclerView'.(Îèòçøÿÿÿÿ8®úäâÌ/

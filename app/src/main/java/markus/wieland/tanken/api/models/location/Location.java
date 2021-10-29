@@ -4,15 +4,15 @@ import markus.wieland.defaultappelements.uielements.adapter.QueryableEntity;
 
 public class Location implements QueryableEntity<String> {
 
-    private String plz;
+    private String postCode;
     private String city;
     private String state;
     private String community;
     private double latitude;
     private double longitude;
 
-    public String getPlz() {
-        return plz;
+    public String getPostCode() {
+        return postCode;
     }
 
     public String getCity() {
@@ -42,6 +42,6 @@ public class Location implements QueryableEntity<String> {
 
     @Override
     public String getStringToApplyQuery() {
-        return getCity() + getCommunity() + getPlz();
+        return getCity() + getCommunity() + getPostCode();
     }
 }

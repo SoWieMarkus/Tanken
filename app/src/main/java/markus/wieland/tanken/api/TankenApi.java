@@ -8,6 +8,7 @@ import markus.wieland.defaultappelements.api.API;
 import markus.wieland.defaultappelements.api.APIResult;
 import markus.wieland.defaultappelements.api.GetRequest;
 import markus.wieland.defaultappelements.api.RequestResultListener;
+import markus.wieland.tanken.api.models.location.Location;
 import markus.wieland.tanken.api.models.responses.ResponseQueryPrices;
 import markus.wieland.tanken.api.models.responses.ResponseQueryStationDetail;
 import markus.wieland.tanken.api.models.responses.ResponseQueryStations;
@@ -18,6 +19,10 @@ public class TankenApi extends API {
     private static final String DETAIL = "details";
     private static final String LIST = "stations";
     private static final String PRICES = "prices";
+    private static final String LOCATIONS = "location";
+    private static final String POSTCODE = "postcode";
+    private static final String CITY = "city";
+
 
     public TankenApi(Activity context) {
         super(context);
@@ -55,6 +60,40 @@ public class TankenApi extends API {
             }
         });
         routesGetRequest.execute();
+    }
+
+    public void queryLocationByCity(APIResult<Location[]> apiResult, String city) {
+        ApiURL url = new ApiURL(BASE_URL + LOCATIONS +"/" + CITY + "/" + city);
+        GetRequest<Location[]> routesGetRequest = new GetRequest<>(Location[].class, url.toString(), new RequestResultListener<Location[]>() {
+            @Override
+            public void onLoad(Location[] response) {
+                notifyClient(response, apiResult);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+        routesGetRequest.execute();
+
+    }
+
+    public void queryLocationByPostCode(APIResult<Location[]> apiResult, String postCode) {
+        ApiURL url = new ApiURL(BASE_URL + LOCATIONS +"/" + POSTCODE + "/" + postCode);
+        GetRequest<Location[]> routesGetRequest = new GetRequest<>(Location[].class, url.toString(), new RequestResultListener<Location[]>() {
+            @Override
+            public void onLoad(Location[] response) {
+                notifyClient(response, apiResult);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+        routesGetRequest.execute();
+
     }
 
     public void queryStations(APIResult<ResponseQueryStations> apiResult, double lat, double lng, double rad) {

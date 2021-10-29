@@ -3,6 +3,7 @@ package markus.wieland.tanken.ui.search;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -27,18 +28,27 @@ public class LocationAdapter extends QueryableAdapter<String, Location, Location
 
     public class LocationViewHolder extends DefaultViewHolder<Location> {
 
+        private TextView locationPostCode;
+        private TextView locationCity;
+        private TextView locationState;
+
+
         public LocationViewHolder(@NonNull View itemView) {
             super(itemView);
         }
 
         @Override
         public void bindViews() {
-
+            locationCity = findViewById(R.id.item_location_city);
+            locationPostCode = findViewById(R.id.item_location_postcode);
+            locationState = findViewById(R.id.item_location_state);
         }
 
         @Override
         public void bindItemToViewHolder(Location location) {
-
+            locationCity.setText(location.getCity());
+            locationState.setText(location.getState());
+            locationPostCode.setText(location.getPostCode());
         }
     }
 
