@@ -4,4 +4,16 @@
     <string name="activity_select_location_title">Standort auswählen</string>
     <string name="activity_select_location_locations_title">Orte in der Nähe</string>
     <string name="activity_select_location_select_this_place">Diesen Standort verwenden</string>
+    <string name="fragment_location_open">geöffnet</string>
+    <string name="fragment_location_closed">geschlossen</string>
+    <string name="activity_create_location_title_edit">Standort bearbeiten</string>
+    <string name="activity_create_location_title_add">Standort hinzufügen</string>
+    <string name="activity_create_location_radius">Suchradius:</string>
+    <string name="activity_create_location_select_location_hint">Wähle einen Standort ...</string>
+    <string name="activity_create_location_only_open">Nur geöffnete Tankstellen zeigen</string>
+    <string name="activity_create_location_fuel_type">Spritsorte</string>
+    <string name="activity_create_location_commit">Hinzufügen</string>
+    <string name="activity_create_location_save">Speichern</string>
+    <string name="activity_create_location_error_label">Bitte gib einen Namen ein</string>
+    <string name="activity_create_location_error_position">Bitte wähle eine Position aus</string>
 </resources>

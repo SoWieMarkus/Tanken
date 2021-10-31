@@ -9,13 +9,13 @@ import androidx.annotation.NonNull;
 
 import markus.wieland.defaultappelements.uielements.adapter.DefaultViewHolder;
 import markus.wieland.defaultappelements.uielements.adapter.QueryableAdapter;
-import markus.wieland.defaultappelements.uielements.adapter.iteractlistener.OnItemInteractListener;
+import markus.wieland.defaultappelements.uielements.adapter.iteractlistener.OnItemClickListener;
 import markus.wieland.tanken.R;
-import markus.wieland.tanken.api.models.location.Location;
+import markus.wieland.tanken.api.models.location.Position;
 
-public class LocationAdapter extends QueryableAdapter<String, Location, LocationAdapter.LocationViewHolder> {
+public class LocationAdapter extends QueryableAdapter<String, Position, LocationAdapter.LocationViewHolder> {
 
-    public LocationAdapter(OnItemInteractListener<Location> onItemInteractListener) {
+    public LocationAdapter(OnItemClickListener<Position> onItemInteractListener) {
         super(onItemInteractListener);
     }
 
@@ -26,7 +26,12 @@ public class LocationAdapter extends QueryableAdapter<String, Location, Location
                 .inflate(R.layout.item_location, parent, false));
     }
 
-    public class LocationViewHolder extends DefaultViewHolder<Location> {
+    @Override
+    public OnItemClickListener<Position> getOnItemInteractListener() {
+        return (OnItemClickListener<Position>) super.getOnItemInteractListener();
+    }
+
+    public class LocationViewHolder extends DefaultViewHolder<Position> {
 
         private TextView locationPostCode;
         private TextView locationCity;
@@ -45,10 +50,11 @@ public class LocationAdapter extends QueryableAdapter<String, Location, Location
         }
 
         @Override
-        public void bindItemToViewHolder(Location location) {
+        public void bindItemToViewHolder(Position location) {
             locationCity.setText(location.getCity());
             locationState.setText(location.getState());
             locationPostCode.setText(location.getPostCode());
+            itemView.setOnClickListener(v -> getOnItemInteractListener().onClick(location));
         }
     }
 

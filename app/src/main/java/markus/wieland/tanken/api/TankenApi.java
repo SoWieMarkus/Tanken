@@ -8,7 +8,7 @@ import markus.wieland.defaultappelements.api.API;
 import markus.wieland.defaultappelements.api.APIResult;
 import markus.wieland.defaultappelements.api.GetRequest;
 import markus.wieland.defaultappelements.api.RequestResultListener;
-import markus.wieland.tanken.api.models.location.Location;
+import markus.wieland.tanken.api.models.location.Position;
 import markus.wieland.tanken.api.models.responses.ResponseQueryPrices;
 import markus.wieland.tanken.api.models.responses.ResponseQueryStationDetail;
 import markus.wieland.tanken.api.models.responses.ResponseQueryStations;
@@ -62,11 +62,11 @@ public class TankenApi extends API {
         routesGetRequest.execute();
     }
 
-    public void queryLocationByCity(APIResult<Location[]> apiResult, String city) {
+    public void queryLocationByCity(APIResult<Position[]> apiResult, String city) {
         ApiURL url = new ApiURL(BASE_URL + LOCATIONS +"/" + CITY + "/" + city);
-        GetRequest<Location[]> routesGetRequest = new GetRequest<>(Location[].class, url.toString(), new RequestResultListener<Location[]>() {
+        GetRequest<Position[]> routesGetRequest = new GetRequest<>(Position[].class, url.toString(), new RequestResultListener<Position[]>() {
             @Override
-            public void onLoad(Location[] response) {
+            public void onLoad(Position[] response) {
                 notifyClient(response, apiResult);
             }
 
@@ -79,11 +79,11 @@ public class TankenApi extends API {
 
     }
 
-    public void queryLocationByPostCode(APIResult<Location[]> apiResult, String postCode) {
+    public void queryLocationByPostCode(APIResult<Position[]> apiResult, String postCode) {
         ApiURL url = new ApiURL(BASE_URL + LOCATIONS +"/" + POSTCODE + "/" + postCode);
-        GetRequest<Location[]> routesGetRequest = new GetRequest<>(Location[].class, url.toString(), new RequestResultListener<Location[]>() {
+        GetRequest<Position[]> routesGetRequest = new GetRequest<>(Position[].class, url.toString(), new RequestResultListener<Position[]>() {
             @Override
-            public void onLoad(Location[] response) {
+            public void onLoad(Position[] response) {
                 notifyClient(response, apiResult);
             }
 

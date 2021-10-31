@@ -16,6 +16,7 @@ import java.util.List;
 
 import markus.wieland.defaultappelements.uielements.activities.DefaultActivity;
 import markus.wieland.tanken.api.models.location.Coordinate;
+import markus.wieland.tanken.api.models.location.Position;
 import markus.wieland.tanken.ui.map.MapView;
 import markus.wieland.tanken.ui.map.SelectLocationInterface;
 
@@ -25,7 +26,7 @@ public class SelectLocationActivity extends DefaultActivity implements SelectLoc
     private Geocoder geocoder;
     private TextView selectLocationAddress;
     private LinearLayout selectLocationCommit;
-    private Coordinate currentLocation;
+    private Position currentLocation;
 
     public SelectLocationActivity() {
         super(R.layout.activity_select_location);
@@ -59,7 +60,9 @@ public class SelectLocationActivity extends DefaultActivity implements SelectLoc
     @Override
     public void execute() {
         geocoder = new Geocoder(this);
-        currentLocation = new Coordinate(51.0366, 13.7588);
+        currentLocation = new Position();
+        currentLocation.setLatitude(51.0366);
+        currentLocation.setLongitude(13.7588);
         onSelectLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
     }
 
@@ -73,7 +76,9 @@ public class SelectLocationActivity extends DefaultActivity implements SelectLoc
     @Override
     public void onSelectLocation(double latitude, double longitude) {
 
-        currentLocation = new Coordinate(latitude, longitude);
+        currentLocation = new Position();
+        currentLocation.setLatitude(latitude);
+        currentLocation.setLongitude(longitude);
 
         List<Address> addresses = new ArrayList<>();
         try {
@@ -83,11 +88,20 @@ public class SelectLocationActivity extends DefaultActivity implements SelectLoc
         }
 
         if (addresses.isEmpty()) {
-            selectLocationAddress.setText(latitude + ", " + longitude);
+            String address = latitude + ", " + longitude;
+            selectLocationAddress.setText(address);
+            currentLocation.setAddress(address);
             return;
         }
 
-        selectLocationAddress.setText(buildAddressString(addresses.get(0)));
+        Address address = addresses.get(0);
+
+        String addressAsString = buildAddressString(address);
+        currentLocation.setAddress(addressAsString);
+        currentLocation.setCity(address.getLocality());
+        currentLocation.setState(address.getAdminArea());
+        currentLocation.setPostCode(address.getPostalCode());
+        selectLocationAddress.setText(addressAsString);
 
     }
 

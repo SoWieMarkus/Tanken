@@ -4,11 +4,9 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import markus.wieland.defaultappelements.uielements.activities.DefaultActivity;
 import markus.wieland.tanken.api.TankenApi;
-import markus.wieland.tanken.api.models.location.Location;
+import markus.wieland.tanken.api.models.location.Position;
 import markus.wieland.tanken.ui.search.LocationAdapter;
 
 public class SearchActivity extends DefaultActivity implements SearchView.OnQueryTextListener {
@@ -26,7 +24,6 @@ public class SearchActivity extends DefaultActivity implements SearchView.OnQuer
     public void bindViews() {
         searchView = findViewById(R.id.activity_search_location_search_view);
         locationList = findViewById(R.id.activity_search_location_list);
-
     }
 
     @Override
@@ -49,7 +46,7 @@ public class SearchActivity extends DefaultActivity implements SearchView.OnQuer
         return false;
     }
 
-    private void onLoad(Location[] locations) {
+    private void onLoad(Position[] locations) {
         locationAdapter.submitList(locations);
     }
 

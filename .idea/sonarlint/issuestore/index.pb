@@ -23,14 +23,8 @@ x
 Happ/src/main/java/markus/wieland/tanken/api/models/stations/Station.java,d\f\dffa7c6c1b5826c23f8be516c74d9975ac582ec9
 ~
 Napp/src/main/java/markus/wieland/tanken/api/models/stations/StationDetail.java,9\4\94ad0774947bd078262812b9dfa73ec6ff642bcf
-l
-<app/src/main/java/markus/wieland/tanken/ui/MapInterface.java,b\9\b92914e8a334f8127a978915d6346844856e8c9a
-g
-7app/src/main/java/markus/wieland/tanken/ui/MapView.java,d\4\d4d88a9659706c7c13f44d608734ad543e17418a
 z
 Japp/src/main/java/markus/wieland/tanken/api/models/responses/Response.java,a\8\a8d4446692bb48aebef9ff0267b4841c32fbb9bd
-w
-Gapp/src/main/java/markus/wieland/tanken/ui/MapInteractionInterface.java,8\1\81cfe2eb1c452d83f0c22062514c9f15aa5c2588
 ~
 Napp/src/main/java/markus/wieland/tanken/ui/FuelStationInteractionListener.java,4\c\4c5edcc64e56d6bac58d217b4238b369071c707b
 q
@@ -61,8 +55,6 @@ Iapp/src/main/java/markus/wieland/tanken/api/models/stations/FuelType.java,c\4\
 Papp/src/main/java/markus/wieland/tanken/api/models/responses/ResponseStatus.java,3\f\3fcbf81567fe85e5e272db149ee0fea9b4eb6e41
 x
 Happ/src/main/java/markus/wieland/tanken/api/models/prices/FuelPrice.java,6\0\60c04ebb75827c8c0b05a9773dba93db1e82efe6
-†
-Vapp/src/main/java/markus/wieland/tanken/api/models/location/QueryLocationResponse.java,2\1\21715a9850760613a8b64c993313982a9ec6447b
 †
 Vapp/src/main/java/markus/wieland/tanken/api/models/location/ResponseQueryLocation.java,4\6\46c7c2321145f9a99bf84c6601a994c409543a11
 ‚

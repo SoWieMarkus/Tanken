@@ -5,4 +5,19 @@
     <string name="activity_select_location_title">Select location</string>
     <string name="activity_select_location_locations_title">Places nearby</string>
     <string name="activity_select_location_select_this_place">Use this location</string>
+    <string name="fragment_location_open">open</string>
+    <string name="fragment_location_closed">closed</string>
+    <string name="activity_create_location_title_edit">Edit location</string>
+    <string name="activity_create_location_title_add">Create location</string>
+    <string name="activity_create_location_radius">Search radius:</string>
+    <string name="fuel_type_diesel" translatable="false">Diesel</string>
+    <string name="fuel_type_e5" translatable="false">Super E5</string>
+    <string name="fuel_type_e10" translatable="false">Super 10</string>
+    <string name="activity_create_location_select_location_hint">Select a location ...</string>
+    <string name="activity_create_location_only_open">Only show stations which are open</string>
+    <string name="activity_create_location_fuel_type">Fuel type</string>
+    <string name="activity_create_location_commit">Add</string>
+    <string name="activity_create_location_save">Save</string>
+    <string name="activity_create_location_error_label">Please enter a name</string>
+    <string name="activity_create_location_error_position">Please select a position</string>
 </resources>

@@ -4,17 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.lifecycle.Observer;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -24,23 +18,155 @@ import java.util.ArrayList;
 import java.util.List;
 
 import markus.wieland.defaultappelements.uielements.activities.DefaultActivity;
-import markus.wieland.defaultappelements.uielements.viewpager.ViewPageAdapter;
-import markus.wieland.defaultappelements.uielements.viewpager.ViewPageAdapterItem;
 import markus.wieland.tanken.api.TankenApi;
-import markus.wieland.tanken.api.models.location.Coordinate;
-import markus.wieland.tanken.api.models.stations.FuelType;
-import markus.wieland.tanken.api.models.responses.ResponseQueryStationDetail;
 import markus.wieland.tanken.api.models.responses.ResponseQueryStations;
 import markus.wieland.tanken.api.models.stations.Station;
-import markus.wieland.tanken.database.station.StationViewModel;
-import markus.wieland.tanken.ui.FuelStationAdapter;
+import markus.wieland.tanken.database.location.LocationViewModel;
+import markus.wieland.tanken.ui.DynamicViewPageAdapter;
 import markus.wieland.tanken.ui.FuelStationInteractionListener;
-import markus.wieland.tanken.ui.UserLocationFragment;
-import markus.wieland.tanken.ui.createlocation.UserLocation;
-import markus.wieland.tanken.ui.map.MapInteractionInterface;
 import markus.wieland.tanken.ui.map.MapView;
+import markus.wieland.tanken.ui.userlocation.CreateLocationActivity;
+import markus.wieland.tanken.ui.userlocation.Location;
+import markus.wieland.tanken.ui.userlocation.fragments.DefaultLocationFragment;
+import markus.wieland.tanken.ui.userlocation.fragments.LocationFragmentInteractionListener;
+import markus.wieland.tanken.ui.userlocation.fragments.UserLocationFragment;
 
-public class MainActivity extends DefaultActivity implements FuelStationInteractionListener, MapInteractionInterface, ViewTreeObserver.OnGlobalLayoutListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends DefaultActivity implements LocationFragmentInteractionListener, ViewTreeObserver.OnGlobalLayoutListener, ViewPager.OnPageChangeListener {
+
+    private LocationViewModel locationViewModel;
+    private ActivityResultLauncher<Intent> selectLocationResultLauncher;
+
+    private ViewPager viewPager;
+    private DynamicViewPageAdapter viewPageAdapter;
+
+    private FloatingActionButton addLocationButton;
+
+    private MapView mapView;
+    private TankenApi tankenApi;
+
+    public MainActivity() {
+        super(R.layout.activity_main);
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        BottomSheetBehavior.from(viewPager).setPeekHeight(findViewById(R.id.fragment_user_location_header).getHeight());
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        Location location = viewPageAdapter.getItem(position).getUserLocation();
+        tankenApi.queryStations(this::onLoad, location.getPosition().getLatitude(),
+                location.getPosition().getLongitude(), location.getRadius());
+    }
+
+    private void onLoad(ResponseQueryStations responseQueryStations) {
+        viewPageAdapter.getItem(viewPager.getCurrentItem()).submitList(responseQueryStations.getStations());
+        mapView.showFuelStations(responseQueryStations);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    @Override
+    public void bindViews() {
+        viewPager = findViewById(R.id.activity_main_view_pager);
+        mapView = findViewById(R.id.activity_main_map_view);
+        addLocationButton = findViewById(R.id.activity_main_floating_button);
+    }
+
+    @Override
+    public void initializeViews() {
+        viewPageAdapter = new DynamicViewPageAdapter(getSupportFragmentManager());
+        findViewById(R.id.coordinator_layout).getViewTreeObserver().addOnGlobalLayoutListener(this);
+        viewPager.setAdapter(viewPageAdapter);
+        viewPager.addOnPageChangeListener(this);
+        addLocationButton.setOnClickListener(v -> startActivityLocationForResult(null, false));
+    }
+
+    @Override
+    public void execute() {
+
+        tankenApi = new TankenApi(this);
+
+        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel.class);
+        locationViewModel.findAll().observe(this, this::onChangesLocation);
+
+        selectLocationResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                this::onActivityResult);
+    }
+
+    private void onChangesLocation(List<Location> locations) {
+        if (locations.isEmpty()) {
+            startActivityLocationForResult(null, true);
+            return;
+        }
+
+        List<DefaultLocationFragment> defaultLocationFragments = new ArrayList<>();
+        for (Location location : locations) {
+            defaultLocationFragments.add(UserLocationFragment.newInstance(location, this));
+        }
+        viewPager.setCurrentItem(0, true);
+        viewPageAdapter.submitList(defaultLocationFragments);
+    }
+
+    private void startActivityLocationForResult(Location location, boolean needsResult) {
+
+        Intent selectLocationIntent = new Intent(this, CreateLocationActivity.class);
+
+        selectLocationIntent.putExtra(CreateLocationActivity.NEEDS_RESULT, needsResult);
+        selectLocationIntent.putExtra(CreateLocationActivity.OBJECT_TO_EDIT, location);
+        selectLocationResultLauncher.launch(selectLocationIntent);
+    }
+
+    private void onActivityResult(ActivityResult result) {
+        if (result.getResultCode() == RESULT_OK) {
+            Location location = (Location) result.getData().getSerializableExtra(CreateLocationActivity.OBJECT_TO_EDIT);
+            boolean wasEdited = result.getData().getBooleanExtra(CreateLocationActivity.WAS_EDITED, false);
+            if (wasEdited) locationViewModel.update(location);
+            else locationViewModel.insert(location);
+        } else {
+            boolean neededResult = result.getData().getBooleanExtra(CreateLocationActivity.NEEDS_RESULT, true);
+            if (neededResult) finish();
+        }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (BottomSheetBehavior.from(viewPager).getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            BottomSheetBehavior.from(viewPager).setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //Do not call super class method here.
+        //super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onEdit(Location location) {
+        startActivityLocationForResult(location, false);
+    }
+
+    @Override
+    public void onStationDetail(Station station) {
+        mapView.focusFuelStation(station);
+        BottomSheetBehavior.from(viewPager).setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+
 
     /* TODO sortieren nach Preis/Distanz
      * Auswahl nach favoriten Benzintyp
@@ -53,14 +179,20 @@ public class MainActivity extends DefaultActivity implements FuelStationInteract
      * 3 Arten von Favoriten: Wenn Nutzer seinen Standort teilt nimmt extra art
      */
 
-    private MapView mapView;
+    /*private MapView mapView;
     private TankenApi tankenApi;
     private StationViewModel stationViewModel;
     private Coordinate coordinate;
     private ImageButton addUserLocation;
 
     private ViewPager viewPager;
-    private ViewPageAdapter viewPageAdapter;
+    private DynamicViewPageAdapter viewPageAdapter;
+
+    private ResponseQueryStations responseQueryStations;
+
+    private ActivityResultLauncher<Intent> selectLocationResultLauncher;
+
+    private LocationViewModel locationViewModel;
 
     public MainActivity() {
         super(R.layout.activity_main);
@@ -79,13 +211,22 @@ public class MainActivity extends DefaultActivity implements FuelStationInteract
     public void bindViews() {
         mapView = findViewById(R.id.activity_main_map_view);
         viewPager = findViewById(R.id.activity_main_view_pager);
-        addUserLocation = findViewById(R.id.activity_main_floating_button);
+        //addUserLocation = findViewById(R.id.activity_main_floating_button);
     }
 
     @Override
     public void initializeViews() {
         findViewById(R.id.coordinator_layout).getViewTreeObserver().addOnGlobalLayoutListener(this);
-        addUserLocation.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, CreateLocationActivity.class)));
+        //addUserLocation.setOnClickListener(v -> startActivityLocationForResult(null, false));
+    }
+
+    private void startActivityLocationForResult(Location location, boolean needsResult) {
+
+        Intent selectLocationIntent = new Intent(this, CreateLocationActivity.class);
+
+        selectLocationIntent.putExtra(CreateLocationActivity.NEEDS_RESULT, needsResult);
+        selectLocationIntent.putExtra(CreateLocationActivity.OBJECT_TO_EDIT, location);
+        selectLocationResultLauncher.launch(selectLocationIntent);
     }
 
     @Override
@@ -97,46 +238,62 @@ public class MainActivity extends DefaultActivity implements FuelStationInteract
     @Override
     public void onGlobalLayout() {
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) findViewById(R.id.constraint_layout).getLayoutParams();
-
         BottomSheetBehavior.from(viewPager).setPeekHeight(findViewById(R.id.fragment_user_location_header).getHeight());
-
         params.height = findViewById(R.id.coordinator_layout).getHeight() - BottomSheetBehavior.from(viewPager).getPeekHeight();
         findViewById(R.id.constraint_layout).setLayoutParams(params);
         mapView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                //mapView.showMapData(getRoute());
+                if (responseQueryStations == null) return;
+                mapView.showFuelStations(responseQueryStations);
             }
-        });
-
+        })
         findViewById(R.id.coordinator_layout).getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }
 
     @Override
     public void execute() {
 
+        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel.class);
+        locationViewModel.findAll().observe(this, this::onChangesLocation);
+
+        selectLocationResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                this::onActivityResult);
+
         tankenApi = new TankenApi(this);
 
-        UserLocation userLocation = new UserLocation();
-        userLocation.setLatitude(51.0366);
-        userLocation.setLongitude(13.7588);
 
-        UserLocation userLocation1 = new UserLocation();
-        userLocation1.setLatitude(53.280205);
-        userLocation1.setLongitude(10.733830);
-
-
-        List<ViewPageAdapterItem> viewPageAdapterItems = new ArrayList<>();
-        viewPageAdapterItems.add(new ViewPageAdapterItem("LOL", UserLocationFragment.newInstance(userLocation, this)));
-        viewPageAdapterItems.add(new ViewPageAdapterItem("LOL", UserLocationFragment.newInstance(userLocation1, this)));
-
-
-        tankenApi.queryStations(this::onLoad, userLocation.getLatitude(), userLocation.getLongitude(), 5);
-
-        viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager(), viewPageAdapterItems);
+        viewPageAdapter = new DynamicViewPageAdapter(getSupportFragmentManager());
+        viewPageAdapter.submitList(new ArrayList<>(Arrays.asList(UserLocationFragment.newInstance(null,this))));
         viewPager.setAdapter(viewPageAdapter);
         viewPager.addOnPageChangeListener(this);
 
+    }
+
+    private void onChangesLocation(List<Location> locations) {
+        if (locations.isEmpty()) {
+            startActivityLocationForResult(null, true);
+            return;
+        }
+
+        List<DefaultLocationFragment> defaultLocationFragments = new ArrayList<>();
+        for (Location location : locations) {
+            defaultLocationFragments.add(UserLocationFragment.newInstance(location, this));
+        }
+        viewPageAdapter.submitList(defaultLocationFragments);
+    }
+
+    private void onActivityResult(ActivityResult result) {
+        if (result.getResultCode() == RESULT_OK) {
+            Location location = (Location) result.getData().getSerializableExtra(CreateLocationActivity.OBJECT_TO_EDIT);
+            boolean wasEdited = result.getData().getBooleanExtra(CreateLocationActivity.WAS_EDITED, false);
+            if (wasEdited) locationViewModel.update(location);
+            else locationViewModel.insert(location);
+        } else {
+            boolean neededResult = result.getData().getBooleanExtra(CreateLocationActivity.NEEDS_RESULT, true);
+            if (neededResult) finish();
+        }
     }
 
     @Override
@@ -151,9 +308,8 @@ public class MainActivity extends DefaultActivity implements FuelStationInteract
 
     @Override
     public void onPageSelected(int position) {
-        UserLocation userLocation = ((UserLocationFragment) viewPageAdapter.getItem(position)).getUserLocation();
-        //TODO radius
-        tankenApi.queryStations(this::onLoad, userLocation.getLatitude(), userLocation.getLongitude(), 5);
+        Location userLocation = ((DefaultLocationFragment) viewPageAdapter.getItem(position)).getUserLocation();
+        tankenApi.queryStations(this::onLoad, userLocation.getPosition().getLatitude(), userLocation.getPosition().getLongitude(), userLocation.getRadius());
     }
 
     @Override
@@ -162,68 +318,15 @@ public class MainActivity extends DefaultActivity implements FuelStationInteract
     }
 
     public void onLoad(ResponseQueryStations responseQueryStations) {
-        mapView.showFuelStations(responseQueryStations);
-        ((UserLocationFragment) viewPageAdapter.getItem(viewPager.getCurrentItem())).submitList(responseQueryStations.getStations());
+        this.responseQueryStations = responseQueryStations;
+        //mapView.showFuelStations(responseQueryStations);
+        ((UserLocationFragment) viewPageAdapter.getItem(viewPager.getCurrentItem()))
+                .submitList(responseQueryStations.getStations());
     }
 
     @Override
     public void onDetail(Station station) {
 
-    }
-
-    /*public static final String REQUEST_COORDINATE = "markus.wieland.tanken.MainActivity.REQUEST_COORDINATE";
-
-    public MainActivity() {
-        super(R.layout.activity_main);
-    }
-
-    @Override
-    public void bindViews() {
-        mapView = findViewById(R.id.activity_main_map_view);
-    }
-
-    @Override
-    public void initializeViews() {
-        mapView.addInterfaceToMap(this);
-        stationViewModel = ViewModelProviders.of(this).get(StationViewModel.class);
-    }
-
-    @Override
-    public void execute() {
-
-        coordinate = (Coordinate)getIntent().getSerializableExtra(REQUEST_COORDINATE);
-
-        tankenApi = new TankenApi(this);
-        stationViewModel.getFavorites().observe(this,this);
-
-        if (coordinate == null) {
-            coordinate = new Coordinate(53.280205, 10.733830);
-        }
-        tankenApi.queryStations(this::onLoad, coordinate.getLatitude(), coordinate.getLongitude(), 5);
-    }
-
-
-    public void onLoad(ResponseQueryStations responseQueryStations) {
-        mapView.showFuelStations(responseQueryStations);
-    }
-
-    public void onLoad(ResponseQueryStationDetail responseQueryStationDetail) {
-        Toast.makeText(this, responseQueryStationDetail.toString(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void detailStation(String id) {
-        tankenApi.queryStationDetail(this::onLoad, id);
-    }
-
-    @Override
-    public void onDetail(Station station) {
-        mapView.focusFuelStation(station);
-    }
-
-
-    @Override
-    public void onChanged(List<Station> stations) {
-        
     }*/
+
 }

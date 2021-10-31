@@ -1,5 +1,6 @@
 package markus.wieland.tanken.ui;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,13 +76,19 @@ public class FuelStationAdapter extends QueryableAdapter<String, Station, FuelSt
             stationName.setText(station.getName());
 
             FuelPrice fuelPrice = station.getPrice(fuelType);
-            stationOpen.setText(station.isOpen() ? "Geöffnet" : "Geschlossen");
+            stationOpen.setText(station.isOpen()
+                    ? getContext().getString(R.string.fragment_location_open)
+                    : getContext().getString(R.string.fragment_location_closed));
             stationOpen.setTextColor(station.isOpen() ? Color.GREEN : Color.RED);
             stationDistance.setText(station.getDistanceAsString());
             stationPrice.setText(fuelPrice.getPriceAsString());
             stationPriceUpper.setText(fuelPrice.getUpperCents());
             stationAddressLineOne.setText(station.getAddressLineOne());
             stationAddressLineTwo.setText(station.getAddressLineTwo());
+        }
+
+        private Context getContext(){
+            return itemView.getContext();
         }
     }
 }

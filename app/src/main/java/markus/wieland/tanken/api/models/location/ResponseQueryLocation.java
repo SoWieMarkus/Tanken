@@ -4,9 +4,9 @@ import java.util.List;
 
 public class ResponseQueryLocation {
 
-    private List<Location> locations;
+    private List<Position> locations;
 
-    public List<Location> getLocations() {
+    public List<Position> getLocations() {
         return locations;
     }
 }
